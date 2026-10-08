@@ -54,54 +54,7 @@ The assignment is divided into three main sections:
 
 
 
----
 
-#  Repository Structure
-
-```text
-plsql-goto-functions-<studentID>-<firstname>/
-│
-├── README.md
-├── .gitignore
-├── git_commands.sh
-│
-├── 00_setup/
-│   └── create_tables.sql
-│
-├── 01_goto/
-│   ├── A1_number_classifier.sql
-│   ├── A2_salary_review.sql
-│   ├── A3_illegal_goto.sql
-│   └── A4_rewrite_no_goto.sql
-│
-├── 02_functions/
-│   ├── B1_fn_annual_salary.sql
-│   ├── B2_fn_years_of_service.sql
-│   ├── B3_fn_calculate_tax.sql
-│   ├── B4_fn_dept_name.sql
-│   └── C1_fn_validate_payroll.sql
-│
-├── 03_tests/
-│   ├── B5_functions_in_select.sql
-│   ├── test_functions.sql
-│   └── test_validate_payroll.sql
-│
-├── screenshots/
-│   ├── A1_output.png
-│   ├── A2_output.png
-│   ├── A3_error_and_fix.png
-│   ├── A4_output.png
-│   ├── B5_select_output.png
-│   └── C1_output.png
-│
-└── docs/
-    ├── REFLECTION.md
-    └── QUIZ_PREP.md
-```
-
-
-
----
 
 #  Database Setup
 
@@ -125,120 +78,27 @@ Stores employee payroll information.
 | `EMP_ID` | Unique employee identifier |
 | `FIRST_NAME` | Employee first name |
 | `LAST_NAME` | Employee last name |
-| `DEPT_ID` | Employee department |
-| `SALARY` | Monthly gross salary in RWF |
-| `BONUS` | Yearly bonus |
-| `HIRE_DATE` | Employee hiring date |
 
-The setup script creates both tables, inserts sample departments and employees, and commits the data.
-
----
 
 #  Part A — GOTO Statements
 
 ## A1 — Number Classifier
 
-**File:**
+![A1 Output](screenshots/A1_output.png)
 
-```text
-01_goto/A1_number_classifier.sql
-```
-
-This program demonstrates the use of `GOTO` to classify numbers as:
-
-- Positive
-- Negative
-- Zero
-- Even
-- Odd
-
-Zero is treated separately because it is neither positive nor negative.
-
-The program uses labels such as:
-
-```sql
-<<is_positive>>
-<<is_negative>>
-<<is_zero>>
-<<check_parity>>
-<<finish>>
-```
-
-This demonstrates how program control can be transferred to different sections of a PL/SQL block.
-
----
 
 ## A2 — Salary Review
 
-**File:**
-
-```text
-01_goto/A2_salary_review.sql
-```
-
-The salary review program uses `GOTO` to place employees into salary bands.
-
-| Salary | Band | Proposed Raise |
-|---:|---|---:|
-| Less than 300,000 RWF | LOW | 10% |
-| 300,000–599,999 RWF | MID | 5% |
-| 600,000 RWF and above | HIGH | 2% |
-
-The program calculates a proposed salary but **does not modify the employee table**.
-
-This allows the use of `GOTO` to transfer execution to the appropriate salary-band calculation before reaching a common output section.
-
----
+![A2 Output](screenshots/A2_output.png)
 
 ## A3 — Illegal GOTO and Fix
 
-**File:**
-
-```text
-01_goto/A3_illegal_goto.sql
-```
-
-This task demonstrates an important PL/SQL restriction:
-
-> A `GOTO` cannot jump into an `IF`, `LOOP`, `CASE`, inner block, or exception handler.
-
-The script intentionally contains an illegal `GOTO` to demonstrate the compiler error and then provides corrected versions.
-
-The expected illegal-GOTO compiler error is:
-
-```text
-PLS-00375: illegal GOTO statement
-```
-
-Two legal fixes are demonstrated:
-
-1. Moving the label to the appropriate block level.
-2. Jumping from an inner block to a label in an enclosing block.
-
----
+![A3 Error and Fix](screenshots/A3_error_and_fix.png)
 
 ## A4 — Rewrite Without GOTO
 
-**File:**
+![A4 Output](screenshots/A4_output.png)
 
-```text
-01_goto/A4_rewrite_no_goto.sql
-```
-
-A1 and A2 are rewritten using structured programming techniques such as:
-
-```sql
-IF
-ELSIF
-ELSE
-CASE
-```
-
-The purpose is to demonstrate that the same logic can be implemented without unconditional jumps.
-
-This version provides a clearer top-to-bottom program flow and is easier to read and maintain.
-
----
 
 #  Part B — Stored Functions
 
@@ -346,217 +206,15 @@ Unknown
 
 #  B5 — Functions Used in SQL
 
-**File:**
-
-```text
-03_tests/B5_functions_in_select.sql
-```
-
-The stored functions are demonstrated inside SQL statements.
-
-Functions are used in:
-
-### SELECT
-
-```sql
-SELECT ...
-       fn_dept_name(e.dept_id),
-       fn_annual_salary(e.emp_id),
-       fn_years_of_service(e.emp_id),
-       fn_calculate_tax(e.salary)
-FROM employees e;
-```
-
-### WHERE
-
-```sql
-WHERE fn_years_of_service(emp_id) >= 5;
-```
-
-### ORDER BY
-
-```sql
-ORDER BY fn_annual_salary(emp_id) DESC;
-```
-
-This demonstrates that stored PL/SQL functions can be integrated directly into SQL queries.
-
----
+![B5 Select Output](screenshots/B5_select_output.png)
 
 #  Part C — Payroll Validator
 
 ## C1 — Payroll Validator
 
-**File:**
-
-```text
-02_functions/C1_fn_validate_payroll.sql
-```
-
-### Function
-
-```text
-fn_validate_payroll(p_emp_id)
-```
-
-The payroll validator combines several concepts from the assignment.
-
-It checks:
-
-1. Whether the employee exists.
-2. Whether the employee has a valid positive salary.
-3. Whether the employee has a valid department.
-4. Whether the hire date is valid.
-5. Whether calculated tax is lower than the salary.
-
-The function returns either:
-
-```text
-VALID: ...
-```
-
-or:
-
-```text
-INVALID: ...
-```
-
-The function also demonstrates the use of `GOTO` to direct invalid cases to a common result section.
-
----
-
-#  Testing
-
-The project includes dedicated testing scripts.
-
-### General function tests
-
-```text
-03_tests/test_functions.sql
-```
-
-Tests include:
-
-- Existing employees
-- Non-existing employees
-- Different salary values
-- Invalid salary values
-- Different departments
-- Missing departments
-- Years of service
-
-### Payroll validation tests
-
-```text
-03_tests/test_validate_payroll.sql
-```
-
-The test script includes both valid and intentionally invalid employee records.
-
-Temporary test records are inserted for validation and removed using:
-
-```sql
-ROLLBACK;
-```
-
-This prevents the temporary test data from permanently changing the database.
-
----
-
-# ▶️ How to Run the Project
+![C1 Output](screenshots/C1_output.png)
 
 
-
-## Step 1 — Create the tables
-
-Run:
-
-```sql
-@00_setup/create_tables.sql
-```
-
-This creates:
-
-```text
-DEPARTMENTS
-EMPLOYEES
-```
-
-and inserts the sample data.
-
----
-
-## Step 2 — Create the functions
-
-Run the functions in this order:
-
-```sql
-@02_functions/B1_fn_annual_salary.sql
-@02_functions/B2_fn_years_of_service.sql
-@02_functions/B3_fn_calculate_tax.sql
-@02_functions/B4_fn_dept_name.sql
-@02_functions/C1_fn_validate_payroll.sql
-```
-
-`C1` should be runned after the other required functions because it uses functions such as `fn_calculate_tax` and `fn_dept_name`.
-
----
-
-## Step 3 — Run the GOTO programs
-
-Run:
-
-```sql
-@01_goto/A1_number_classifier.sql
-@01_goto/A2_salary_review.sql
-@01_goto/A3_illegal_goto.sql
-@01_goto/A4_rewrite_no_goto.sql
-```
-
----
-
-## Step 4 — Run the tests
-
-Run:
-
-```sql
-@03_tests/B5_functions_in_select.sql
-@03_tests/test_functions.sql
-@03_tests/test_validate_payroll.sql
-```
-
----
-
-## Step 5 — Verify the results
-
-Check:
-
-- Console output
-- Function compilation status
-- Error messages for intentionally invalid cases
-- SQL query results
-- Payroll validation results
-
-
-
----
-
-#  Screenshots
-
-The repository includes screenshots for the main practical outputs:
-
-| Screenshot | Purpose |
-|---|---|
-| `A1_output.png` | Number classifier output |
-| `A2_output.png` | Salary review output |
-| `A3_error_and_fix.png` | Illegal GOTO error and corrected code |
-| `A4_output.png` | Version rewritten without GOTO |
-| `B5_select_output.png` | Functions used inside SQL |
-| `C1_output.png` | Payroll validation results |
-
-These correspond to the screenshot requirements listed in the assignment structure.
-
----
 
 # 📚 Key PL/SQL Concepts Demonstrated
 
@@ -623,38 +281,6 @@ v_emp employees%ROWTYPE;
 ```
 
 ---
-
-#  What I Learned
-
-Through this assignment, I practiced using PL/SQL control-flow statements and stored functions in practical database scenarios.
-
-I learned that `GOTO` can transfer control to a label, but it has important restrictions. In particular, a `GOTO` cannot jump into an `IF`, `LOOP`, `CASE`, inner block, or exception handler.
-
-I also learned how structured `IF/ELSIF/ELSE` and `CASE` statements can replace `GOTO` logic and generally provide clearer program flow.
-
-The function exercises helped me understand how reusable PL/SQL logic can be created and then called from ordinary SQL statements such as `SELECT`, `WHERE`, and `ORDER BY`.
-
-Exception handling was also important because functions need to handle situations such as missing employees, invalid input, and unexpected database conditions.
-
----
-
-#  AI Usage
-
-I used an AI assistant as a learning and development aid during this assignment.
-
-The AI assistant helped me with:
-
-- Understanding PL/SQL concepts
-- Structuring SQL and PL/SQL scripts
-- Reviewing syntax
-- Explaining errors
-
-
-I remained responsible for running, testing, reviewing, and understanding the submitted code.
-
----
-
-
 
 
 ##  Conclusion
