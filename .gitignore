@@ -1,0 +1,14 @@
+# Oracle temporary files
+*.log
+*.trc
+*.dmp
+*.aud
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Editor temporary files
+*.swp
+*.swo
+*~
